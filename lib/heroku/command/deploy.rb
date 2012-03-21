@@ -3,20 +3,20 @@ module Heroku::Command
   class Deploy < BaseWithApp
     
     def index
-      envs = environments.keys
+      envs = Heroku::Command::Base.new.send(:git_remotes)
       
       unless envs.empty?
         puts "Specify which environment you want to deploy to: "
         envs.each do |env|
           puts "* #{env}"
         end
-        puts "Example: heroku deploy:#{env.first}"
+        puts "Example: heroku deploy:#{envs.first}"
       else
         puts "No heroku remote repositories defined."
       end
     end
     
-    environments.each do |env, app|
+    Heroku::Command::Base.new.send(:git_remotes).each do |env, app|
       unless instance_methods.include?(env.to_sym)
         define_method(env) do
           deploy!(env)
@@ -31,20 +31,15 @@ module Heroku::Command
     end
     
     private
-    def environments
-      @envs ||= Heroku::Command::Base.new.send(:git_remotes)
-    end
-    
-    
     
     def deploy!(env)
       
-      display "Deploy this app to #{env.humanize}?"
+      display "Deploy this app to #{env}?"
       
       if confirm
         run_command "maintenance:on", ["--remote", env]
         
-        git_checkout branch unless git_current_branch?(env)
+        git_checkout env unless git_current_branch?(env)
         
         if git_push(env, env)
           run_command "maintenance:off", ["--remote", env]
@@ -56,6 +51,8 @@ module Heroku::Command
     def git_push(local_branch, remote, use_remote_master=true)
       remote_branch = use_remote_master ? ":master" : ""
       command = "git push #{remote} #{local_branch}#{remote_branch}"
+      display command
+      %x{ command }
     end
     
     def git_current_branch?(branch)
