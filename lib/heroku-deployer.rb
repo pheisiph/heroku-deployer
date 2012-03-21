@@ -1,0 +1,2 @@
+require "heroku-deployer/version"
+
