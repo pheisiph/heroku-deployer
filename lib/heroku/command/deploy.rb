@@ -52,7 +52,8 @@ module Heroku::Command
       remote_branch = use_remote_master ? ":master" : ""
       command = "git push #{remote} #{local_branch}#{remote_branch}"
       display command
-      %x{ command }
+      puts %x{ command }
+      $?.success?
     end
     
     def git_current_branch?(branch)
