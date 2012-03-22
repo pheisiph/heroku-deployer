@@ -52,7 +52,7 @@ module Heroku::Command
       remote_branch = use_remote_master ? ":master" : ""
       command = "git push #{remote} #{local_branch}#{remote_branch}"
       display command
-      puts %x{ command }
+      puts %x{ #{command} }
       $?.success?
     end
     
@@ -66,7 +66,7 @@ module Heroku::Command
     
     def git_checkout(branch)
       command = "git checkout #{branch}"
-      %x{ command }
+      %x{ #{command} }
     end
     
     
