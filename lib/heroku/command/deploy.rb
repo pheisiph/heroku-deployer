@@ -34,18 +34,26 @@ module Heroku::Command
     
     def deploy!(env)
       
+      skip_question = !(args & %w{-y --yes --skip-question}).empty?
+      
+      
       display "Deploy this app to #{env}?"
       
-      if confirm
-        run_command "maintenance:on", ["--remote", env]
-        
-        git_checkout env unless git_current_branch?(env)
-        
-        if git_push(env, env)
-          run_command "maintenance:off", ["--remote", env]
-        end
-        
-      end
+      
+      
+      
+      puts args.inspect
+      puts args.class
+      
+      # if confirm
+      #   run_command "maintenance:on", ["--remote", env]
+      #   
+      #   git_checkout env unless git_current_branch?(env)
+      #   
+      #   if git_push(env, env)
+      #     run_command "maintenance:off", ["--remote", env]
+      #   end
+      # end
     end
     
     def git_push(local_branch, remote, use_remote_master=true)
