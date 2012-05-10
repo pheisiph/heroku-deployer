@@ -34,6 +34,7 @@ module Heroku::Command
     
     def deploy!(env)
       skip_question = !(args & %w{-y --yes --skip-question}).empty?
+      keep_maintenance = !(args & %w{-m --maintenance-on}).empty?
       
       display "Deploy this app to #{env}?" unless skip_question
 
@@ -43,7 +44,7 @@ module Heroku::Command
         git_checkout env unless git_current_branch?(env)
         
         if git_push(env, env)
-          run_command "maintenance:off", ["--remote", env]
+          run_command "maintenance:off", ["--remote", env] unless keep_maintenance
         end
       end
     end
