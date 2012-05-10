@@ -45,15 +45,17 @@ module Heroku::Command
       puts args.inspect
       puts args.class
       
-      # if confirm
-      #   run_command "maintenance:on", ["--remote", env]
-      #   
-      #   git_checkout env unless git_current_branch?(env)
-      #   
-      #   if git_push(env, env)
-      #     run_command "maintenance:off", ["--remote", env]
-      #   end
-      # end
+      if skip_question || confirm
+        puts "run with it"
+        
+        # run_command "maintenance:on", ["--remote", env]
+        # 
+        # git_checkout env unless git_current_branch?(env)
+        # 
+        # if git_push(env, env)
+        #   run_command "maintenance:off", ["--remote", env]
+        # end
+      end
     end
     
     def git_push(local_branch, remote, use_remote_master=true)
