@@ -33,6 +33,8 @@ In that case deploying to your environment is as simple as typing
  heroku deploy:production
 ```
 
+... assuming you have corresponding staging and production branches. 
+
 The Deployer turns on maintenance mode on your Heroku instance before pushing and turns it off if the deployment was successful. 
 
 ### Parameters
