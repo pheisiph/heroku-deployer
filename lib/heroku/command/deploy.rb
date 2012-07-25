@@ -24,27 +24,36 @@ module Heroku::Command
         
         help = {
           :summary => " Deploys #{env} to heroku",
-          :description => " Turns on maintenance mode, pushes the local branch #{env} to heroku and then turns off maintenance mode"
+          :description => " Turns on maintenance mode, pushes the local "\
+               "branch #{env} to heroku and then turns off maintenance mode "\
+               "unless the flags -n or -m are provided."
         }
-        help[:help] = ["deploy:#{env}", help[:summary], help[:description]].join("\n\n")
+        help[:help] = [
+          "deploy:#{env}", 
+          help[:summary], 
+          help[:description]
+        ].join("\n\n")
       end
     end
     
     private
     
     def deploy!(env)
-      skip_question = !(args & %w{-y --yes --skip-question}).empty?
+      skip_question    = !(args & %w{-y --yes --skip-question}).empty?
       keep_maintenance = !(args & %w{-m --maintenance-on}).empty?
+      no_maintenance   = !(args & %w{-n --no-maintenance}).empty?
       
       display "Deploy this app to #{env}?" unless skip_question
 
       if skip_question || confirm
-        run_command "maintenance:on", ["--remote", env]
+        run_command "maintenance:on", ["--remote", env] unless no_maintenance
         
         git_checkout env unless git_current_branch?(env)
         
         if git_push(env, env)
-          run_command "maintenance:off", ["--remote", env] unless keep_maintenance
+          if !keep_maintenance || !no_maintenance
+            run_command "maintenance:off", ["--remote", env] 
+          end
         end
       end
     end
